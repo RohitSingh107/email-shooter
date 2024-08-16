@@ -1,0 +1,26 @@
+RohitSinghEmail@protonmail.com
+Resume_H.pdf
+Application for SDE Functional Programming - Rohit Singh
+
+Dear Hiring Manager,
+
+I am thrilled to express my strong interest in the SDE Functional Programming position at Juspay. As a dedicated Computer Science undergraduate, I am eager to bring my passion for emerging technologies and proficiency in Functional Programming to contribute to your team.
+
+From the early stages of my programming journey, I have been captivated by the elegance and aesthetics of Functional Programming, embracing features such as immutability, statelessness, declarative paradigm, pure functions, and higher-order functions. I have experience working with Haskell and some familiarity with Purescript, Elixir, and incorporating Functional Programming principles into Python using modules like functools and itertools.
+
+Discovering Juspay's alignment with my passion and love for functional programming resonated deeply with me. I distinctly felt a resounding "YES, THIS IS MY DREAM COMPANY" from within.
+
+As a Software Developer Intern at AppAvengers Labs, I honed my skills in web backend development and cutting-edge technologies. My projects involved crafting Bitcoin wallets in Rust, engineering smart contracts for Ethereum and Solana blockchains, and developing backends and REST APIs using Haskell IHP, Django, and FastAPI. I delved into web3 technologies, including ZK Proofs, Roll-ups, and SDKs.
+
+Proficient in Haskell, Python, Rust, Typescript, and C++, I've successfully executed projects spanning API development to deployment. My expertise extends to databases, particularly PostgreSQL and MongoDB. I boast a strong foundation in data structures and algorithms, highlighted by my JavaScript library focused on calculus algorithms.
+
+A commitment to continuous learning and exploration of new technologies, coupled with a preference for test-driven development, ensures the creation of robust and reliable code. My ability to generate comprehensive technical documentation further underscores my dedication to quality work.
+
+Being an active member of the Garuda Linux open-source project showcases my collaborative and proactive approach to contributing to meaningful endeavors.
+
+In conclusion, I am confident that my technical proficiency, proactive mindset, and commitment to positive impact align seamlessly with your team's goals and values. I look forward to discussing how I can contribute meaningfully to Juspay.
+
+Thank you for considering my application. I eagerly anticipate the opportunity to discuss my potential contributions further.
+
+Sincerely,
+Rohit Singh

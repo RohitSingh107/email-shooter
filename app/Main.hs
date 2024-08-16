@@ -1,0 +1,27 @@
+
+{-# LANGUAGE DeriveDataTypeable #-}
+
+module Main where
+
+import Configuration.Dotenv (loadFile, defaultConfig)
+import System.Console.CmdArgs (Data, Typeable, cmdArgs)
+import qualified Data.Text as T
+import EmailSender (processEmail)
+
+data PathArgs = PathArgs
+  { emaildir :: !String
+  , attdir   :: !String
+  } deriving (Show, Data, Typeable)
+
+pathArgs :: PathArgs
+pathArgs = PathArgs
+  { emaildir = "/home/rohits/mydata/code/git_repos/email-shooter/emails"
+  , attdir   = "/home/rohits/mydata/code/git_repos/email-shooter/attachments"
+  }
+
+main :: IO ()
+main = do
+  loadFile defaultConfig
+  args <- cmdArgs pathArgs
+  mapM_ (processEmail (emaildir args)) ["circuithub"]
+  putStrLn "All emails sent successfully!"
