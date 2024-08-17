@@ -20,7 +20,7 @@ import           System.IO                   (openFile, hSetBuffering, hClose, I
 import           System.Environment          (getEnv)
 import           System.Exit                 (die)
 
-import           Email
+import           Types
 
 formatAddress :: T.Text -> Address
 formatAddress s = Address {addressEmail = s, addressName = Nothing}

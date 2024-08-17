@@ -1,7 +1,6 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
-module Email
+module Types
   ( Email(..)
   , Address(..)
   , fromText
