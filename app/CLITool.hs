@@ -3,13 +3,8 @@
 module Main where
 
 import System.Environment (getArgs)
-import qualified Data.ByteString.Lazy as BL
-import Data.Aeson (encode, object, (.=))
-import Network.HTTP.Simple
 import Configuration.Dotenv (loadFile, defaultConfig)
-
-import Types (Email(..))
-import EmailSender (sendEmail, processEmail)
+import EmailSender (processEmail)
 
 -- -- Send email using CLI arguments
 -- sendEmailFromCli :: FilePath -> IO ()

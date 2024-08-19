@@ -99,8 +99,25 @@ executable eserver
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1
+                    , mongoDB 
+                    , bson
+                    , servant-server
+                    , HaskellNet
+                    , HaskellNet-SSL
+                    , bytestring
+                    , text
+                    , smtp-mail
+                    , dotenv
+                    , directory
+                    , MissingH
+                    , cmdargs
                     , aeson
+                    , http-conduit
+                    , warp
 
+
+
+    other-modules: Types, EmailSender, EmailAPI, EmailServer
 
     -- Directories containing source files.
     hs-source-dirs:   app, src

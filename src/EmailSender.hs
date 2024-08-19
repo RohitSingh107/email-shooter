@@ -27,8 +27,11 @@ import           System.IO                   (BufferMode (BlockBuffering),
                                               hSetBuffering, openFile)
 import           Types
 
-formatAddress :: T.Text -> Address
-formatAddress s = Address {addressEmail = s, addressName = Nothing}
+formatAddress :: T.Text -> EmailAddress
+formatAddress s = EmailAddress {emailAddressEmail = s, emailAddressName = Nothing}
+
+emailAddressToAddress :: EmailAddress -> Address
+emailAddressToAddress (EmailAddress { emailAddressName = n, emailAddressEmail = e }) = Address {addressName=n, addressEmail=e}
 
 formatAttachment :: String -> T.Text -> (T.Text, FilePath)
 formatAttachment attDir file = (mimeType, path)
@@ -56,10 +59,10 @@ sendEmail email = do
                 EmailBody (Just textContent) Nothing -> [plainPart $ LT.fromStrict textContent]
                 EmailBody Nothing Nothing -> []
   let mail = Mail
-        { mailFrom = emailFrom email
-        , mailTo = emailTo email
-        , mailCc = emailCc email
-        , mailBcc = emailBcc email
+        { mailFrom = emailAddressToAddress $ emailFrom email
+        , mailTo = map emailAddressToAddress $ emailTo email
+        , mailCc = map emailAddressToAddress $ emailCc email
+        , mailBcc = map emailAddressToAddress $ emailBcc email
         , mailHeaders = [("Subject", emailSubject email)]
         , mailParts = [bodyPart]
         }
@@ -102,13 +105,16 @@ processEmail emailDir emailName = do
 
 
   let emailData = Email
-        { emailFrom = Address Nothing "rohitsingh.mait@gmail.com"
+        { emailFrom = EmailAddress Nothing "rohitsingh.mait@gmail.com"
         , emailTo = addresses
         , emailCc = []
-        , emailBcc = [Address Nothing "rohitsingh.mait@gmail.com"]
+        , emailBcc = [EmailAddress Nothing "rohitsingh.mait@gmail.com"]
         , emailSubject = subject
         , emailBody = body
         , emailAttachments = attachments
         }
+  -- let jsonString = encode emailData
+  -- BL.putStrLn jsonString
+  -- BL.putStr jsonString
   sendEmail emailData
   hClose fh
