@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module EmailSender
+module Utils
   ( sendEmail
   , processEmail
   , formatAddress
@@ -14,17 +14,14 @@ import           Data.MIME.Types             (defaultmtd, guessType)
 import qualified Data.Text                   as T
 import qualified Data.Text.IO                as TIO
 import qualified Data.Text.Lazy              as LT
-import           Network.HaskellNet.Auth     (AuthType (LOGIN))
-import           Network.HaskellNet.SMTP     (authenticate, closeSMTP, sendMail)
-import           Network.HaskellNet.SMTP.SSL (connectSMTPSSL)
+import           Network.HaskellNet.SMTP     (sendMail, SMTPConnection)
 import           Network.Mail.Mime           (Address (..), Mail (..),
                                               addAttachments, addAttachmentsBS,
                                               htmlPart, plainPart)
-import           System.Environment          (getEnv)
-import           System.Exit                 (die)
 import           System.IO                   (BufferMode (BlockBuffering),
                                               IOMode (ReadMode), hClose,
                                               hSetBuffering, openFile)
+import Control.Concurrent.Async (mapConcurrently_)
 import           Types
 
 formatAddress :: T.Text -> EmailAddress
@@ -49,9 +46,9 @@ formatAttachments' ((Attachment fn fc ft):xs) = case fc of
                              AttachmentBase64 b -> undefined
                   where go = formatAttachments' xs
 
-sendEmail :: Email -> IO ()
-sendEmail email = do
-  password <- getEnv "PASS"
+sendEmail :: SMTPConnection -> Email -> IO ()
+sendEmail conn email = do
+  -- password <- getEnv "PASS"
 
   let bodyPart = case emailBody email of
                 EmailBody (Just textContent) (Just htmlContent) -> [plainPart $ LT.fromStrict textContent, htmlPart $ LT.fromStrict htmlContent]
@@ -68,15 +65,16 @@ sendEmail email = do
         }
   let formattedAttachments = formatAttachments' $ emailAttachments email
   mailWithAttachments <- addAttachments (fst formattedAttachments) (addAttachmentsBS (snd formattedAttachments) mail)
-  conn <- connectSMTPSSL "smtp.gmail.com"
-  authSucceed <- authenticate LOGIN "rohitsingh.mait@gmail.com" password conn
-  if authSucceed
-    then sendMail mailWithAttachments conn
-    else die "Authentication failed."
-  closeSMTP conn
+  -- conn <- connectSMTPSSL "smtp.gmail.com"
+  -- authSucceed <- authenticate LOGIN "rohitsingh.mait@gmail.com" password conn
+  -- if authSucceed
+  --   then sendMail mailWithAttachments conn
+  --   else die "Authentication failed."
+  -- closeSMTP conn
+  sendMail mailWithAttachments conn
 
-processEmail :: String -> String -> IO ()
-processEmail emailDir emailName = do
+processEmail :: SMTPConnection -> String -> String -> IO ()
+processEmail conn emailDir emailName = do
   fh <- openFile (emailDir <> "/" <> emailName <> ".txt") ReadMode
   hSetBuffering fh (BlockBuffering Nothing)
 
@@ -116,5 +114,13 @@ processEmail emailDir emailName = do
   -- let jsonString = encode emailData
   -- BL.putStrLn jsonString
   -- BL.putStr jsonString
-  sendEmail emailData
+  sendEmail conn emailData
   hClose fh
+
+
+sendEMails :: SMTPConnection -> [Email] -> IO ()
+sendEMails conn = mapConcurrently_ $ sendEmail conn
+
+
+
+

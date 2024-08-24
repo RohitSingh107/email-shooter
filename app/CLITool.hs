@@ -2,9 +2,13 @@
 
 module Main where
 
-import System.Environment (getArgs)
+import System.Environment ( getArgs, getEnv )
 import Configuration.Dotenv (loadFile, defaultConfig)
-import EmailSender (processEmail)
+import Utils (processEmail)
+import           Network.HaskellNet.SMTP     (authenticate, closeSMTP)
+import           Network.HaskellNet.SMTP.SSL (connectSMTPSSL)
+import           System.Exit                 (die)
+import           Network.HaskellNet.Auth     (AuthType (LOGIN))
 
 -- -- Send email using CLI arguments
 -- sendEmailFromCli :: FilePath -> IO ()
@@ -27,12 +31,27 @@ import EmailSender (processEmail)
 
 main :: IO ()
 main = do
-    loadFile defaultConfig
     args <- getArgs
     case args of
         -- [filePath] -> sendEmailFromCli filePath
         [emailName] -> do
-            processEmail "/home/rohits/mydata/code/git_repos/email-shooter/emails" emailName
+
+            loadFile defaultConfig
+
+            password <- getEnv "PASS"
+            conn <- connectSMTPSSL "smtp.gmail.com"
+            authSucceed <- authenticate LOGIN "rohitsingh.mait@gmail.com" password conn
+            if authSucceed
+              then putStrLn "Gmail Authenticated"
+              else die "Authentication failed."
+
+            processEmail conn "/home/rohits/mydata/code/git_repos/email-shooter/emails" emailName
+            -- processEmail conn "/home/rohits/mydata/code/git_repos/email-shooter/emails" emailName
+            -- processEmail conn "/home/rohits/mydata/code/git_repos/email-shooter/emails" emailName
+            -- processEmail conn "/home/rohits/mydata/code/git_repos/email-shooter/emails" emailName
             putStrLn "Email sent successfully!"
+
+            closeSMTP conn
+
         _ -> putStrLn "Usage: cli-tool <Email name>"
 

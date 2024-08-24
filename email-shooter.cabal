@@ -59,7 +59,7 @@ executable ecli
     main-is:          CLITool.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules: Types, EmailSender
+    other-modules: Types, Utils, Serializers
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -77,6 +77,9 @@ executable ecli
                     , cmdargs
                     , aeson
                     , http-conduit
+                    , async
+                    , bson
+                    , mongoDB 
 
     -- Directories containing source files.
     hs-source-dirs:   app, src
@@ -114,10 +117,11 @@ executable eserver
                     , aeson
                     , http-conduit
                     , warp
+                    , async
 
 
 
-    other-modules: Types, EmailSender, EmailAPI, EmailServer
+    other-modules: Types, Utils, EmailAPI, EmailServer, Serializers
 
     -- Directories containing source files.
     hs-source-dirs:   app, src
