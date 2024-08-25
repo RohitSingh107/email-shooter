@@ -11,7 +11,7 @@ module Serializers (bsonToEmail, emailToBson) where
 import           Data.Bson              (Document, Value (..), (=:))
 import qualified Data.Text              as T
 import qualified Database.MongoDB       as MongoDB
-import           Types
+import           Models
 
 -- EmailAddress conversions
 emailAddressToBson :: EmailAddress -> Document

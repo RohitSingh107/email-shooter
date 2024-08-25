@@ -4,12 +4,13 @@
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Types
+module Models
   ( Email(..)
   , EmailBody(..)
   , Attachment(..)
   , AttachmentContent(..)
   , EmailAddress(..)
+  , APIError(..)
   , fromText
   ) where
 
@@ -18,6 +19,8 @@ import qualified Data.Text              as T
 import           Data.Text.Lazy.Builder (fromText)
 import           GHC.Generics
 
+
+data APIError = NotFound String | NotAuthenticated String
 
 data EmailAddress = EmailAddress
   { emailAddressName  :: Maybe T.Text
@@ -50,6 +53,11 @@ data Email = Email
   , emailBody        ::  EmailBody
   , emailAttachments :: [Attachment]
   } deriving (Show, Eq, Generic)
+
+
+instance ToJSON APIError where
+    toJSON (NotFound msg) = object ["error" .= ("Not Found" :: String), "message" .= msg]
+    toJSON (NotAuthenticated msg) = object ["error" .= ("Not NotAuthenticated" :: String), "message" .= msg]
 
 instance ToJSON EmailAddress where
     toJSON EmailAddress{..} = object

@@ -3,8 +3,8 @@
 module Main where
 
 import qualified Database.MongoDB         as MongoDB
-import           EmailAPI
-import           EmailServer
+import           API
+import           Server
 import           Network.Wai.Handler.Warp
 import           Servant
 

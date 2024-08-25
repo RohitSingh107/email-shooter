@@ -22,7 +22,7 @@ import           System.IO                   (BufferMode (BlockBuffering),
                                               IOMode (ReadMode), hClose,
                                               hSetBuffering, openFile)
 import Control.Concurrent.Async (mapConcurrently_)
-import           Types
+import           Models
 
 formatAddress :: T.Text -> EmailAddress
 formatAddress s = EmailAddress {emailAddressEmail = s, emailAddressName = Nothing}
