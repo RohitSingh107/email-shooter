@@ -51,9 +51,32 @@ extra-doc-files:    CHANGELOG.md
 common warnings
     ghc-options: -Wall
 
+common library
+    build-depends:    mongoDB
+                    , bson
+                    , async
+                    , HaskellNet
+                    , HaskellNet-SSL
+                    , bytestring
+                    , text
+                    , smtp-mail
+                    , dotenv
+                    , directory
+                    , MissingH
+                    , cmdargs
+                    , aeson
+                    , http-conduit
+
+    -- Directories containing source files.
+    hs-source-dirs:   app, src
+
+    ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+
+
+
 executable ecli
     -- Import common warning flags.
-    import:           warnings
+    import:           warnings, library
 
     -- .hs or .lhs file containing the Main module.
     main-is:          CLITool.hs
@@ -66,30 +89,13 @@ executable ecli
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1
-                    , HaskellNet
-                    , HaskellNet-SSL
-                    , bytestring
-                    , text
-                    , smtp-mail
-                    , dotenv
-                    , directory
-                    , MissingH
-                    , cmdargs
-                    , aeson
-                    , http-conduit
-                    , async
-                    , bson
-                    , mongoDB 
-
-    -- Directories containing source files.
-    hs-source-dirs:   app, src
 
     -- Base language which the package is written in.
     default-language: Haskell2010
 
 executable eserver
     -- Import common warning flags.
-    import:           warnings
+    import:           warnings, library
 
     -- .hs or .lhs file containing the Main module.
     main-is:          APIServer.hs
@@ -102,32 +108,16 @@ executable eserver
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1
-                    , mongoDB 
-                    , bson
                     , servant
                     , servant-server
-                    , HaskellNet
-                    , HaskellNet-SSL
-                    , bytestring
-                    , text
-                    , smtp-mail
-                    , dotenv
-                    , directory
                     , MissingH
-                    , cmdargs
-                    , aeson
-                    , http-conduit
                     , warp
-                    , async
                     , wai
                     , http-types
 
 
 
     other-modules: Models, Utils, API, Server, Serializers
-
-    -- Directories containing source files.
-    hs-source-dirs:   app, src
 
     -- Base language which the package is written in.
     default-language: Haskell2010

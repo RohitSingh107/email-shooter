@@ -78,7 +78,7 @@ bsonToAttachment doc = do
 
 -- Email conversions
 emailToBson :: Email -> Document
-emailToBson Email {..} =
+emailToBson Email {..} = -- _id is omitted for purpose
   [ "emailFrom" =: emailAddressToBson emailFrom,
     "emailTo" =: map emailAddressToBson emailTo,
     "emailCc" =: map emailAddressToBson emailCc,
@@ -99,7 +99,8 @@ bsonToEmail doc = do
   attachments <- mapM bsonToAttachment =<< MongoDB.lookup "emailAttachments" doc
   return
     Email
-      { emailFrom = from,
+      { _id = T.pack . show <$> (MongoDB.lookup "_id" doc :: Maybe MongoDB.ObjectId),
+        emailFrom = from,
         emailTo = to,
         emailCc = cc,
         emailBcc = bcc,

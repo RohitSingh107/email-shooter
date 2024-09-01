@@ -5,24 +5,29 @@ module Utils
   , processEmail
   , formatAddress
   , formatAttachment
+  , getEmailList
+  , sendEMails
   ) where
 
 -- import           Configuration.Dotenv        (defaultConfig, loadFile)
-import qualified Data.ByteString.Lazy        as BL
-import           Data.Maybe
-import           Data.MIME.Types             (defaultmtd, guessType)
-import qualified Data.Text                   as T
-import qualified Data.Text.IO                as TIO
-import qualified Data.Text.Lazy              as LT
-import           Network.HaskellNet.SMTP     (sendMail, SMTPConnection)
-import           Network.Mail.Mime           (Address (..), Mail (..),
-                                              addAttachments, addAttachmentsBS,
-                                              htmlPart, plainPart)
-import           System.IO                   (BufferMode (BlockBuffering),
-                                              IOMode (ReadMode), hClose,
-                                              hSetBuffering, openFile)
-import Control.Concurrent.Async (mapConcurrently_)
+import           Control.Concurrent.Async (mapConcurrently_)
+import           Data.Bson                ((=:))
+import qualified Data.ByteString.Lazy     as BL
+import           Data.Maybe               (fromMaybe, mapMaybe)
+import           Data.MIME.Types          (defaultmtd, guessType)
+import qualified Data.Text                as T
+import qualified Data.Text.IO             as TIO
+import qualified Data.Text.Lazy           as LT
+import qualified Database.MongoDB         as MongoDB
 import           Models
+import           Network.HaskellNet.SMTP  (SMTPConnection, sendMail)
+import           Network.Mail.Mime        (Address (..), Mail (..),
+                                           addAttachments, addAttachmentsBS,
+                                           htmlPart, plainPart)
+import           Serializers              (bsonToEmail)
+import           System.IO                (BufferMode (BlockBuffering),
+                                           IOMode (ReadMode), hClose,
+                                           hSetBuffering, openFile)
 
 formatAddress :: T.Text -> EmailAddress
 formatAddress s = EmailAddress {emailAddressEmail = s, emailAddressName = Nothing}
@@ -103,7 +108,8 @@ processEmail conn emailDir emailName = do
 
 
   let emailData = Email
-        { emailFrom = EmailAddress Nothing "rohitsingh.mait@gmail.com"
+        { _id = Nothing
+        , emailFrom = EmailAddress Nothing "rohitsingh.mait@gmail.com"
         , emailTo = addresses
         , emailCc = []
         , emailBcc = [EmailAddress Nothing "rohitsingh.mait@gmail.com"]
@@ -118,9 +124,28 @@ processEmail conn emailDir emailName = do
   hClose fh
 
 
+
+idToEmail :: MongoDB.Pipe -> T.Text -> IO (Maybe Email)
+idToEmail pipe idText = do
+  let oid = read (T.unpack idText) :: MongoDB.ObjectId
+  doc <- run $ MongoDB.findOne (MongoDB.select ["_id" =: oid] "emails")
+  case doc of
+    Just d  -> return $ bsonToEmail d
+    Nothing -> return Nothing
+
+  where run = MongoDB.access pipe MongoDB.master "email_database"
+
+getEmailList :: MongoDB.Pipe -> [T.Text] -> [EmailAddress] -> IO [Email]
+getEmailList pipe ids rec = do
+  results <- mapM (idToEmail pipe) ids  -- Use mapM to handle IO actions
+  return (mapMaybe setReceipent results)
+  where
+    setReceipent (Just e) = if null rec then Just e else Just $ e { emailTo = rec }
+    setReceipent Nothing = Nothing
+
+
 sendEMails :: SMTPConnection -> [Email] -> IO ()
 sendEMails conn = mapConcurrently_ $ sendEmail conn
-
 
 
 

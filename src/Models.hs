@@ -2,7 +2,6 @@
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TypeOperators     #-}
 
 module Models
   ( Email(..)
@@ -11,6 +10,7 @@ module Models
   , AttachmentContent(..)
   , EmailAddress(..)
   , APIError(..)
+  , SendEmailsRequest(..)
   , fromText
   ) where
 
@@ -45,13 +45,20 @@ data Attachment = Attachment
   } deriving (Show, Eq, Generic)
 
 data Email = Email
-  { emailFrom        :: EmailAddress
+  { _id              :: Maybe T.Text
+  , emailFrom        :: EmailAddress
   , emailTo          :: [EmailAddress]
   , emailCc          :: [EmailAddress]
   , emailBcc         :: [EmailAddress]
   , emailSubject     :: T.Text
   , emailBody        ::  EmailBody
   , emailAttachments :: [Attachment]
+  } deriving (Show, Eq, Generic)
+
+
+data SendEmailsRequest = SendEmailsRequest
+  { emailIds   :: [T.Text]
+  , recipients :: [EmailAddress]
   } deriving (Show, Eq, Generic)
 
 
@@ -78,3 +85,5 @@ instance ToJSON Attachment
 instance FromJSON Attachment
 instance ToJSON Email
 instance FromJSON Email
+instance ToJSON SendEmailsRequest
+instance FromJSON SendEmailsRequest
